@@ -1,5 +1,6 @@
 package com.example.myapplication.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -22,11 +23,12 @@ import java.util.HashMap;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-    private EditText etEmail, etUsername, etPassword, etConfirmPassword;
+    private EditText etEmail, etUsername, etPassword, etConfirmPassword, etPhoneNumber;
     private Button btnCreateAccount;
     private FirebaseAuth mAuth;
     private DatabaseReference databaseReference;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +43,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         // Initialize UI elements
         etEmail = findViewById(R.id.etEmail);
+        etPhoneNumber = findViewById(R.id.etPhoneNumber);
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
@@ -58,11 +61,12 @@ public class CreateAccountActivity extends AppCompatActivity {
     private void createAccount() {
         String email = etEmail.getText().toString().trim();
         String username = etUsername.getText().toString().trim();
+        String phoneNumber = etPhoneNumber.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
         // Validate input fields
-        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(username) || TextUtils.isEmpty(phoneNumber) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
             Toast.makeText(this, "All fields are required!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -82,13 +86,17 @@ public class CreateAccountActivity extends AppCompatActivity {
                             String userId = mAuth.getCurrentUser().getUid();
 
                             // Store user data in Firebase Database
-                            HashMap<String, String> userMap = new HashMap<>();
+                            HashMap<String, Object> userMap = new HashMap<>();
                             userMap.put("userId", userId);
                             userMap.put("username", username);
+                            userMap.put("phone_number", phoneNumber);
                             userMap.put("email", email);
                             userMap.put("password", password);
 
-                            // Save data in Firebase Realtime Database with Debug Logging
+                            // ✅ Ensure "contacts" field exists as an empty object
+                            userMap.put("contacts", new HashMap<String, Boolean>());
+
+                            // Save data in Firebase Realtime Database
                             databaseReference.child(userId).setValue(userMap)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -110,5 +118,6 @@ public class CreateAccountActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
 }

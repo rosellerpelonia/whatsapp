@@ -38,6 +38,7 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.firebase.auth
     implementation libs.firebase.database
+    implementation 'com.google.android.material:material:1.4.0'
     implementation platform(libs.firebase.bom)
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
