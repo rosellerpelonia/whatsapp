@@ -1,12 +1,15 @@
 package com.example.myapplication.fragments;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +24,7 @@ import com.example.myapplication.adapters.ChatsAdapter;
 import com.example.myapplication.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,12 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatsFragment extends Fragment {
-
     private RecyclerView recyclerView;
     private ChatsAdapter chatsAdapter;
     private List<User> userList;
     private DatabaseReference contactsRef, usersRef;
-    private FirebaseAuth auth;
     private String currentUserId;
     private FloatingActionButton fabNewChat;
 
@@ -57,16 +59,27 @@ public class ChatsFragment extends Fragment {
         fabNewChat = view.findViewById(R.id.fabNewChat);
         fabNewChat.setOnClickListener(v -> showAddContactDialog());
 
-        auth = FirebaseAuth.getInstance();
-        currentUserId = auth.getCurrentUser().getUid();
+        if (getActivity() != null) {
+            SharedPreferences prefs = getActivity().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+            currentUserId = prefs.getString("currentUserId", null);
+        }
 
-        contactsRef = FirebaseDatabase.getInstance("https://whatsapp-7c561-default-rtdb.asia-southeast1.firebasedatabase.app")
-                .getReference("Users").child(currentUserId).child("contacts");
+        if (currentUserId != null) {
+            Log.d("ChatsFragment", "Current User ID: " + currentUserId);
 
-        usersRef = FirebaseDatabase.getInstance("https://whatsapp-7c561-default-rtdb.asia-southeast1.firebasedatabase.app")
-                .getReference("Users");
+            contactsRef = FirebaseDatabase.getInstance("https://whatsapp-7c561-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                    .getReference("Users")
+                    .child(currentUserId)
+                    .child("contacts");
 
-        loadContacts();
+            usersRef = FirebaseDatabase.getInstance("https://whatsapp-7c561-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                    .getReference("Users");
+
+            loadContacts();
+        } else {
+            Log.e("ChatsFragment", "User ID is null! Possible login issue.");
+            Toast.makeText(getContext(), "User ID is null. Please login again.", Toast.LENGTH_SHORT).show();
+        }
 
         return view;
     }
@@ -132,21 +145,36 @@ public class ChatsFragment extends Fragment {
     }
 
     private void findUserByPhoneNumber(String phoneNumber) {
+        if (getActivity() == null) {
+            Log.e("ChatsFragment", "Activity is null in findUserByPhoneNumber");
+            return;
+        }
+
+        SharedPreferences prefs = getActivity().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+        String currentUserId = prefs.getString("currentUserId", null);
+
+        if (currentUserId == null) {
+            Toast.makeText(getContext(), "User not found. Please login again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         usersRef.orderByChild("phone_number").equalTo(phoneNumber)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                String userId = userSnapshot.getKey();
+                                String foundUserId = userSnapshot.getKey();
 
-                                // Add userId to current user's contacts
-                                contactsRef.child(userId).setValue(true)
+                                Log.d("ChatsFragment", "Adding contact: " + foundUserId + " to user: " + currentUserId);
+
+                                contactsRef.child(foundUserId).setValue(true)
                                         .addOnSuccessListener(aVoid -> {
+                                            Log.d("ChatsFragment", "Contact added successfully!");
                                             Toast.makeText(getContext(), "Contact added!", Toast.LENGTH_SHORT).show();
                                             loadContacts();
                                         })
-                                        .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to add contact", Toast.LENGTH_SHORT).show());
+                                        .addOnFailureListener(e -> Log.e("ChatsFragment", "Failed to add contact", e));
                             }
                         } else {
                             Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
