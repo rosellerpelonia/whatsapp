@@ -45,6 +45,7 @@ public class ChatActivity extends AppCompatActivity {
         messageEditText = findViewById(R.id.messageEditText);
         sendButton = findViewById(R.id.sendButton);
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
+        ImageView backButton = findViewById(R.id.backButton);
 
         userId = getIntent().getStringExtra("userId"); // Receiver's ID
         username = getIntent().getStringExtra("username");
@@ -77,6 +78,8 @@ public class ChatActivity extends AppCompatActivity {
         loadMessages();
 
         sendButton.setOnClickListener(v -> sendMessage());
+
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void sendMessage() {
