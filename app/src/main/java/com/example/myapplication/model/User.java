@@ -5,12 +5,15 @@ public class User {
     private String username;
     private String phone;
 
+    private String profileImage;
+
     public User() {}
 
-    public User(String userId, String username, String phone) {
+    public User(String userId, String username, String phone, String profileImage) {
         this.userId = userId;
         this.username = username;
         this.phone = phone;
+        this.profileImage = profileImage;
     }
 
     public String getUserId() {
@@ -35,5 +38,13 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }
