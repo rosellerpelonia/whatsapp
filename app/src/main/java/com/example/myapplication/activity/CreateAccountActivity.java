@@ -1,6 +1,7 @@
 package com.example.myapplication.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -50,12 +51,16 @@ public class CreateAccountActivity extends AppCompatActivity {
         btnCreateAccount = findViewById(R.id.btnCreateAccount);
 
         // Handle button click
-        btnCreateAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createAccount();
-            }
+        btnCreateAccount.setOnClickListener(v -> createAccount());
+
+        Button btnBackToLogin = findViewById(R.id.btnBackToLogin);
+        btnBackToLogin.setOnClickListener(v -> {
+            // Navigate back to MainActivity (Login Screen)
+            Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
         });
+
     }
 
     private void createAccount() {
@@ -104,6 +109,12 @@ public class CreateAccountActivity extends AppCompatActivity {
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(CreateAccountActivity.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
                                                 System.out.println("Database write successful for user: " + userId);
+
+                                                // ✅ Redirect to MainActivity (Login Screen)
+                                                Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                finish();
                                             } else {
                                                 Toast.makeText(CreateAccountActivity.this, "Failed to save data!", Toast.LENGTH_SHORT).show();
                                                 System.out.println("Database write failed: " + task.getException().getMessage());
@@ -118,6 +129,4 @@ public class CreateAccountActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
 }
