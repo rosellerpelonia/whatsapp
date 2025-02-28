@@ -1,5 +1,6 @@
 package com.example.myapplication.activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Initialize Firebase Database Reference
-//        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+//        databaseReference = FirebaseDatabase.getInstance().getReference("Users");https://whatsapp-7c561-default-rtdb.asia-southeast1.firebasedatabase.app
         databaseReference = FirebaseDatabase.getInstance("https://whatsapp-7c561-default-rtdb.asia-southeast1.firebasedatabase.app/")
                 .getReference("Users");
 
@@ -60,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     private void loginUser() {
         String enteredUsername = etUsername.getText().toString().trim();
         String enteredPassword = etPassword.getText().toString().trim();
@@ -70,36 +70,45 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if username exists in Firebase Database
-        databaseReference.orderByChild("username").equalTo(enteredUsername).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Loop through users (should be only one match)
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String storedPassword = snapshot.child("password").getValue(String.class);
+        databaseReference.orderByChild("username").equalTo(enteredUsername)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                String storedPassword = snapshot.child("password").getValue(String.class);
+                                if (storedPassword != null && storedPassword.equals(enteredPassword)) {
+                                    // Get User ID from Database
+                                    String userId = snapshot.child("userId").getValue(String.class);
 
-                        if (storedPassword != null && storedPassword.equals(enteredPassword)) {
-                            // Login successful
-                            Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
-                            return;
+                                    if (userId != null) {
+                                        // Store userId & username in SharedPreferences
+                                        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = prefs.edit();
+                                        editor.putString("currentUserId", userId);
+                                        editor.putString("currentUsername", enteredUsername);
+                                        editor.apply();
+
+                                        // Navigate to HomeActivity
+                                        Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                    return;
+                                }
+                            }
+                            Toast.makeText(MainActivity.this, "Incorrect password!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Username not found!", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    // Password incorrect
-                    Toast.makeText(MainActivity.this, "Incorrect password!", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Username not found
-                    Toast.makeText(MainActivity.this, "Username not found!", Toast.LENGTH_SHORT).show();
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(MainActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(MainActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
+
 }
