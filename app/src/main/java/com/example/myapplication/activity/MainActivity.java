@@ -30,11 +30,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Check if user is already logged in
+        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        String currentUsername = prefs.getString("currentUsername", null);
+
+        if (currentUsername != null) {
+            // User is already logged in, go to HomeActivity
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
         setContentView(R.layout.activity_main);
 
-
-        // Initialize Firebase Database Reference
-//        databaseReference = FirebaseDatabase.getInstance().getReference("Users");https://whatsapp-7c561-default-rtdb.asia-southeast1.firebasedatabase.app
         databaseReference = FirebaseDatabase.getInstance("https://whatsapp-7c561-default-rtdb.asia-southeast1.firebasedatabase.app/")
                 .getReference("Users");
 
