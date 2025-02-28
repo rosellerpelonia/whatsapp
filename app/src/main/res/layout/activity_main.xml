@@ -9,11 +9,21 @@
     android:id="@+id/main_layout"
     android:background="@android:color/white">
 
+    <!-- WhatsApp Logo -->
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/whatsapp"
+        android:contentDescription="@string/whatsapp_logo"
+        android:layout_marginBottom="20dp"/>
+
     <EditText
         android:id="@+id/etUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/username"
+        android:textColor="#282424"
         android:padding="12dp"
         android:textSize="16sp"
         android:background="@android:drawable/edit_text"
@@ -24,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/password"
+        android:textColor="#282424"
         android:padding="12dp"
         android:textSize="16sp"
         android:background="@android:drawable/edit_text"

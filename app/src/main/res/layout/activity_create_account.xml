@@ -10,20 +10,22 @@
     android:background="@android:color/white">
 
     <EditText
-        android:id="@+id/etEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/email"
-        android:padding="12dp"
-        android:textSize="16sp"
-        android:background="@android:drawable/edit_text"
-        android:inputType="textEmailAddress"/>
+    android:id="@+id/etEmail"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="@string/email"
+    android:textColor="#282424"
+    android:padding="12dp"
+    android:textSize="16sp"
+    android:background="@android:drawable/edit_text"
+    android:inputType="textEmailAddress"/>
 
     <EditText
         android:id="@+id/etUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/c_username"
+        android:textColor="#282424"
         android:padding="12dp"
         android:textSize="16sp"
         android:background="@android:drawable/edit_text"
@@ -31,10 +33,24 @@
         android:layout_marginTop="10dp"/>
 
     <EditText
+        android:id="@+id/etPhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/phone_number"
+        android:textColor="#282424"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:background="@android:drawable/edit_text"
+        android:inputType="textPhonetic"
+        android:layout_marginTop="10dp"/>
+
+
+    <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/c_password"
+        android:textColor="#282424"
         android:padding="12dp"
         android:textSize="16sp"
         android:background="@android:drawable/edit_text"
@@ -46,6 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/confirm_password"
+        android:textColor="#282424"
         android:padding="12dp"
         android:textSize="16sp"
         android:background="@android:drawable/edit_text"
@@ -62,5 +79,18 @@
         android:textColor="#FFFFFF"
         android:padding="12dp"
         android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/btnBackToLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back to Login"
+        android:textSize="16sp"
+        android:backgroundTint="#FF5722"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:layout_marginTop="10dp"/>
+
+
 
 </LinearLayout>

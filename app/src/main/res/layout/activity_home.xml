@@ -9,19 +9,17 @@
     android:background="@android:color/white"
     tools:context=".activity.HomeActivity">
 
-    <!-- Header TextView (JChat) -->
-    <TextView
+
+    <!-- Toolbar (Used as Header) -->
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/headerTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="JChat"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:gravity="left"
-        android:padding="16dp"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
-        />
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:titleTextColor="@android:color/white"/>
+
+
 
     <!-- Tab Layout -->
     <com.google.android.material.tabs.TabLayout
